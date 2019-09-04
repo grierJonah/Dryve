@@ -9,6 +9,8 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <script type="text/javascript" src="config.js"></script>
+    <script type="text/javascript" src="script.js"></script>
     <title>Find Accidents</title>
     <style>
         /* Set the size of the div element that contains the map */
@@ -85,7 +87,7 @@
 
 <h3>Nearest Accidents</h3>
 <script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC2x9zeE-dnXXKSAVBt-r20Gaak9ZL0zVI&callback=initMap">
+        src="https://maps.googleapis.com/maps/api/js?key=" + googleApiKey>
 </script>
 
 
@@ -150,7 +152,7 @@
     }
 </script>
 <%--<script async defer--%>
-        <%--src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC2x9zeE-dnXXKSAVBt-r20Gaak9ZL0zVI&callback=initMap">--%>
+        <%--src="https://maps.googleapis.com/maps/api/js?key=" + googleApiKey>--%>
 <%--</script>--%>
 
 
