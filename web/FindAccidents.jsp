@@ -9,8 +9,8 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-    <script type="text/javascript" src="config.js"></script>
-    <script type="text/javascript" src="script.js"></script>
+    <script type="text/javascript" src="src/servlet/config.js"></script>
+    <script type="text/javascript" src="src/servlet/script.js"></script>
     <title>Find Accidents</title>
     <style>
         /* Set the size of the div element that contains the map */
