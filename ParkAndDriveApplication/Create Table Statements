@@ -1,0 +1,154 @@
+CREATE SCHEMA IF NOT EXISTS ParkAndDriveApplication;
+USE ParkAndDriveApplication;
+
+-- -- -- -- -- --
+-- DROP TABLES -- 
+-- -- -- -- -- --
+DROP TABLE IF EXISTS Severity;
+DROP TABLE IF EXISTS FavoriteParking;
+DROP TABLE IF EXISTS FavoriteLocations;
+DROP TABLE IF EXISTS Ratings;
+DROP TABLE IF EXISTS Parking;
+DROP TABLE IF EXISTS PayStations;
+DROP TABLE IF EXISTS Users;
+DROP TABLE IF EXISTS Accidents;
+
+-- -- -- -- -- -- --
+-- CREATE TABLES ---
+-- -- -- -- -- -- -- 
+CREATE TABLE Users (
+    UserName VARCHAR(255),
+    Password VARCHAR(255) NOT NULL,
+    FirstName VARCHAR(255) NOT NULL,
+    LastName VARCHAR(255) NOT NULL,
+    Email VARCHAR(255) NOT NULL,
+    CONSTRAINT pk_Users_UserName PRIMARY KEY (UserName)
+);
+
+CREATE TABLE Accidents (
+    AccidentId INT AUTO_INCREMENT,
+    X DOUBLE,
+    Y DOUBLE,
+    SeverityCode INT,
+    CollisionType VARCHAR(255),
+    PersonCount INT,
+    PedCount INT,
+    PedCycCount INT,
+    VehCount INT,
+    Date TIMESTAMP,
+    CONSTRAINT pk_Accidents_AccidentId PRIMARY KEY (AccidentId)
+);
+
+CREATE TABLE FavoriteLocations (
+    FavoriteLocId INT AUTO_INCREMENT,
+    UserName VARCHAR(255),
+    CONSTRAINT pk_FavoriteLocations_FavoriteLocId PRIMARY KEY (FavoriteLocId),
+    CONSTRAINT fk_FavoriteLocations_UserName FOREIGN KEY (UserName)
+        REFERENCES Users (UserName)
+        ON UPDATE CASCADE ON DELETE SET NULL
+);
+
+CREATE TABLE FavoriteParking (
+    FavoriteParkingId INT AUTO_INCREMENT,
+    ParkingId INT,
+    UserName VARCHAR(255),
+    CONSTRAINT pk_FavoriteParking_FavoriteParkingId PRIMARY KEY (FavoriteParkingId),
+    CONSTRAINT fk_FavoriteParking_UserName FOREIGN KEY (UserName)
+        REFERENCES Users (UserName)
+        ON UPDATE CASCADE ON DELETE SET NULL
+);
+
+CREATE TABLE Parking (
+    ParkingId INT AUTO_INCREMENT,
+    FacilityName VARCHAR(255),
+    FacilityAddress VARCHAR(255),
+    HRSOpenWeek TIME,
+    HRSOpenSAT TIME,
+    HRSOpenSUN TIME,
+    Rate_1HR DOUBLE,
+    Rate_2HR DOUBLE,
+    Rate_3HR DOUBLE,
+    Rate_ALLDAY DOUBLE,
+	Capacity INT,
+    CONSTRAINT pk_Parking_ParkingId PRIMARY KEY (ParkingId)
+);
+
+CREATE TABLE PayStations (
+	PayStationId INT AUTO_INCREMENT,
+    X DOUBLE,
+    Y DOUBLE,
+    Neighborhood VARCHAR(50),
+    SubArea VARCHAR(50),
+    Side VARCHAR(2),
+    UnitDescription VARCHAR(255),
+    PayByPhone INT,
+    WeekDayRate_1Hour DOUBLE,
+    WeekDayRate_2Hour DOUBLE,
+    WeekDayRate_3Hour DOUBLE,
+    SaturdayRate_1Hour DOUBLE,
+    SaturdayRate_2Hour DOUBLE,
+    SaturdayRate_3Hour DOUBLE,
+    SaturdayStartTime Timestamp,
+    SaturdayEndTime Timestamp DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT pk_PayStations_PayStationId PRIMARY KEY (PayStationId)
+);
+
+CREATE TABLE Ratings (
+    RatingId INT AUTO_INCREMENT,
+    Rating INT,
+    UserName VARCHAR(255),
+    ParkingId INT,
+    CONSTRAINT pk_Ratings_RatingId PRIMARY KEY (RatingId),
+    CONSTRAINT fk_Ratings_UserName FOREIGN KEY (UserName)
+        REFERENCES Users (UserName)
+        ON DELETE SET NULL,
+    CONSTRAINT fk_Ratings_ParkingId FOREIGN KEY (ParkingId)
+        REFERENCES Parking (ParkingId)
+        ON UPDATE CASCADE ON DELETE SET NULL
+);
+
+CREATE TABLE Severity (
+    SeverityId INT AUTO_INCREMENT,
+    SeverityCode INT,
+    SeverityDesc VARCHAR(255),
+    CONSTRAINT pk_Severity_SeverityId PRIMARY KEY (SeverityId),
+    CONSTRAINT fk_Severity_SeverityCode FOREIGN KEY (SeverityCode)
+        REFERENCES Accidents(AccidentId)
+        ON UPDATE CASCADE ON DELETE SET NULL
+);
+
+
+-- -- -- -- -- -- -- -- -- --
+-- LOAD DATA INTO TABLES ----
+-- -- -- -- -- -- -- -- -- --
+LOAD DATA LOCAL INFILE '/tmp/database/newAccidents.csv' INTO TABLE Accidents
+	FIELDS TERMINATED BY ','
+    LINES TERMINATED BY '\n'
+    IGNORE 1 LINES
+    (X, Y, SEVERITYCODE, COLLISIONTYPE, PERSONCOUNT, PEDCOUNT, PEDCYCCOUNT, VEHCOUNT, Date);
+    
+LOAD DATA LOCAL INFILE '/tmp/database/public_garages.csv' INTO TABLE Parking
+	FIELDS TERMINATED BY '|'
+    LINES TERMINATED BY '\n'
+    IGNORE 1 LINES
+    (FacilityName, FacilityAddress, HRSOpenWeek, HRSOpenSAT, HRSOpenSUN, Rate_1HR, Rate_2HR, Rate_3HR, Rate_ALLDAY, Capacity);
+
+LOAD DATA LOCAL INFILE '/tmp/database/severity.csv' INTO TABLE Severity
+	FIELDS TERMINATED BY ','
+    LINES TERMINATED BY '\n'
+    IGNORE 1 LINES
+    (SEVERITYCODE, SEVERITYDESC);
+    
+LOAD DATA LOCAL INFILE '/tmp/database/users.csv' INTO TABLE Users
+	FIELDS TERMINATED BY ','
+    LINES TERMINATED BY '\n'
+    IGNORE 1 LINES
+    (UserName, Password, FirstName, LastName, Email);
+    
+LOAD DATA LOCAL INFILE '/tmp/database/paystations.csv' INTO TABLE PayStations
+	FIELDS TERMINATED BY ','
+    LINES TERMINATED BY '\n'
+    IGNORE 1 LINES
+    (X, Y, Neighborhood, SubArea, Side, UnitDescription, PayByPhone, WeekDayRate_1Hour, WeekDayRate_2Hour, WeekDayRate_3Hour,
+    SaturdayRate_1Hour, SaturdayRate_2Hour, SaturdayRate_3Hour, SaturdayStartTime, SaturdayEndTime);
+
